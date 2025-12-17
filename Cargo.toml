@@ -1,0 +1,43 @@
+[package]
+name = "rkv"
+version = "0.10.5"
+authors = ["Richard Newman <rnewman@twinql.com>", "Nan Jiang <najiang@mozilla.com>", "Myk Melez <myk@mykzilla.org>", "Victor Porof <vporof@mozilla.com>"]
+edition = "2021"
+rust-version = "1.70"
+license = "Apache-2.0"
+description = "a simple, humane, typed Rust interface to LMDB"
+documentation = "https://docs.rs/rkv"
+homepage = "https://github.com/ApiliumCode/rkv"
+repository = "https://github.com/ApiliumCode/rkv"
+readme = "README.md"
+keywords = ["lmdb", "database", "storage"]
+categories = ["database"]
+exclude = ["/tests/envs/*"]
+
+[features]
+default = []
+with-asan = ["lmdb-rkv/with-asan"]
+with-fuzzer = ["lmdb-rkv/with-fuzzer"]
+with-fuzzer-no-link = ["lmdb-rkv/with-fuzzer-no-link"]
+
+[dependencies]
+arrayref = "0.3"
+bincode = "1.0"
+bitflags = "2"
+byteorder = "1"
+lazy_static = "1.0"
+lmdb-rkv = "0.14"
+ordered-float = "4"
+uuid = "1"
+serde = "1.0"
+serde_derive = "1.0"
+url = "2.0"
+
+thiserror = "1.0"
+
+[dev-dependencies]
+byteorder = "1"
+tempfile = "3"
+
+[patch.crates-io]
+lmdb-rkv = { git = "https://github.com/ApiliumCode/lmdb-rs.git" }
