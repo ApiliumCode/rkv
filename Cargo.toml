@@ -26,7 +26,7 @@ bincode = "1.0"
 bitflags = "2"
 byteorder = "1"
 lazy_static = "1.0"
-aingle-lmdb = { version = "0.1", git = "https://github.com/ApiliumCode/lmdb-rs.git" }
+aingle-lmdb = "0.1"
 ordered-float = "4"
 uuid = "1"
 serde = "1.0"
