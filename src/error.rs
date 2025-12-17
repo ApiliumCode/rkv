@@ -12,7 +12,7 @@ use std::path::PathBuf;
 
 use bincode;
 use thiserror::Error;
-use lmdb;
+use aingle_lmdb as lmdb;
 
 use crate::value::Type;
 
@@ -61,7 +61,7 @@ pub enum StoreError {
     DataError(DataError),
 
     #[error("lmdb error: {0}")]
-    LmdbError(lmdb::Error),
+    LmdbError(aingle_lmdb::Error),
 
     #[error("read transaction already exists in thread {0:?}")]
     ReadTransactionAlreadyExists(::std::thread::ThreadId),
@@ -76,10 +76,10 @@ impl StoreError {
     }
 }
 
-impl From<lmdb::Error> for StoreError {
-    fn from(e: lmdb::Error) -> StoreError {
+impl From<aingle_lmdb::Error> for StoreError {
+    fn from(e: aingle_lmdb::Error) -> StoreError {
         match e {
-            lmdb::Error::BadRslot => StoreError::ReadTransactionAlreadyExists(::std::thread::current().id()),
+            aingle_lmdb::Error::BadRslot => StoreError::ReadTransactionAlreadyExists(::std::thread::current().id()),
             e => StoreError::LmdbError(e),
         }
     }
@@ -130,7 +130,7 @@ pub enum MigrateError {
     InvalidPageNum,
 
     #[error("lmdb error: {0}")]
-    LmdbError(lmdb::Error),
+    LmdbError(aingle_lmdb::Error),
 
     #[error("string conversion error")]
     StringConversionError,
@@ -181,8 +181,8 @@ impl From<String> for MigrateError {
     }
 }
 
-impl From<lmdb::Error> for MigrateError {
-    fn from(e: lmdb::Error) -> MigrateError {
+impl From<aingle_lmdb::Error> for MigrateError {
+    fn from(e: aingle_lmdb::Error) -> MigrateError {
         match e {
             e => MigrateError::LmdbError(e),
         }

@@ -14,7 +14,7 @@
 //! the number of key/value pairs to create via the `-n <number>` flag
 //! (for which the default value is 50).
 
-extern crate rkv;
+extern crate aingle_rkv as rkv;
 
 use rkv::{
     Rkv,

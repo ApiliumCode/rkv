@@ -15,9 +15,9 @@ use std::path::{
     PathBuf,
 };
 
-use lmdb;
+use aingle_lmdb as lmdb;
 
-use lmdb::{
+use aingle_lmdb::{
     Database,
     DatabaseFlags,
     Environment,
@@ -44,7 +44,7 @@ use crate::store::Options as StoreOptions;
 
 pub static DEFAULT_MAX_DBS: c_uint = 5;
 
-/// Wrapper around an `lmdb::Environment`.
+/// Wrapper around an `aingle_lmdb::Environment`.
 #[derive(Debug)]
 pub struct Rkv {
     path: PathBuf,
@@ -72,7 +72,7 @@ impl Rkv {
         Ok(Rkv {
             path: path.into(),
             env: env.open(path).map_err(|e| match e {
-                lmdb::Error::Other(2) => StoreError::DirectoryDoesNotExistError(path.into()),
+                aingle_lmdb::Error::Other(2) => StoreError::DirectoryDoesNotExistError(path.into()),
                 e => StoreError::LmdbError(e),
             })?,
         })
@@ -152,12 +152,12 @@ impl Rkv {
     {
         if opts.create {
             self.env.create_db(name.into(), opts.flags).map_err(|e| match e {
-                lmdb::Error::BadRslot => StoreError::open_during_transaction(),
+                aingle_lmdb::Error::BadRslot => StoreError::open_during_transaction(),
                 _ => e.into(),
             })
         } else {
             self.env.open_db(name.into()).map_err(|e| match e {
-                lmdb::Error::BadRslot => StoreError::open_during_transaction(),
+                aingle_lmdb::Error::BadRslot => StoreError::open_during_transaction(),
                 _ => e.into(),
             })
         }

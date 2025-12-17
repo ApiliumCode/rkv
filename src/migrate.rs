@@ -64,7 +64,7 @@ use byteorder::{
     LittleEndian,
     ReadBytesExt,
 };
-use lmdb::{
+use aingle_lmdb::{
     DatabaseFlags,
     Environment,
     Transaction,
@@ -790,7 +790,7 @@ mod tests {
     use super::MigrateResult;
     use super::Migrator;
     use crate::error::MigrateError;
-    use lmdb::{
+    use aingle_lmdb::{
         Environment,
         Error as LmdbError,
     };

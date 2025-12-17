@@ -199,7 +199,7 @@
 
 #![allow(dead_code)]
 
-pub use lmdb::{
+pub use aingle_lmdb::{
     DatabaseFlags,
     EnvironmentBuilder,
     EnvironmentFlags,
@@ -214,7 +214,7 @@ mod readwrite;
 pub mod store;
 pub mod value;
 
-pub use lmdb::{
+pub use aingle_lmdb::{
     Cursor,
     Database,
     Error as LmdbError,
@@ -252,10 +252,10 @@ pub use self::value::{
     Value,
 };
 
-fn read_transform(val: Result<&[u8], lmdb::Error>) -> Result<Option<Value>, StoreError> {
+fn read_transform(val: Result<&[u8], aingle_lmdb::Error>) -> Result<Option<Value>, StoreError> {
     match val {
         Ok(bytes) => Value::from_tagged_slice(bytes).map(Some).map_err(StoreError::DataError),
-        Err(lmdb::Error::NotFound) => Ok(None),
+        Err(aingle_lmdb::Error::NotFound) => Ok(None),
         Err(e) => Err(StoreError::LmdbError(e)),
     }
 }

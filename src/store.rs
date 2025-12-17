@@ -3,7 +3,7 @@ pub mod integermulti;
 pub mod multi;
 pub mod single;
 
-use lmdb::DatabaseFlags;
+use aingle_lmdb::DatabaseFlags;
 
 #[derive(Default, Debug, Copy, Clone)]
 pub struct Options {

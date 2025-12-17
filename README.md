@@ -2,15 +2,15 @@
   <img src="https://raw.githubusercontent.com/ApiliumCode/aingle/main/assets/aingle.svg" alt="AIngle Logo" width="200"/>
 </p>
 
-<h1 align="center">rkv</h1>
+<h1 align="center">aingle-rkv</h1>
 
 <p align="center">
   <strong>Typed key-value storage with multiple backends for AIngle</strong>
 </p>
 
 <p align="center">
-  <a href="https://crates.io/crates/rkv"><img src="https://img.shields.io/crates/v/rkv.svg" alt="Crates.io"/></a>
-  <a href="https://docs.rs/rkv"><img src="https://docs.rs/rkv/badge.svg" alt="Documentation"/></a>
+  <a href="https://crates.io/crates/aingle-rkv"><img src="https://img.shields.io/crates/v/aingle-rkv.svg" alt="Crates.io"/></a>
+  <a href="https://docs.rs/aingle-rkv"><img src="https://docs.rs/aingle-rkv/badge.svg" alt="Documentation"/></a>
   <a href="https://github.com/ApiliumCode/rkv/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License"/></a>
   <a href="https://github.com/ApiliumCode/rkv/actions"><img src="https://github.com/ApiliumCode/rkv/workflows/CI/badge.svg" alt="CI Status"/></a>
 </p>
@@ -33,7 +33,7 @@ A simple, humane, typed key-value storage solution for Rust. This crate supports
 
 ```toml
 [dependencies]
-rkv = "0.1"
+aingle-rkv = "0.1"
 ```
 
 ## Quick Start

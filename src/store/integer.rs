@@ -14,7 +14,7 @@ use bincode::{serialize, deserialize};
 
 use serde::{de::DeserializeOwned, Serialize};
 
-use lmdb::Database;
+use aingle_lmdb::Database;
 
 use crate::error::{
     DataError,

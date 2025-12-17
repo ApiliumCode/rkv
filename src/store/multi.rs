@@ -17,7 +17,7 @@ use crate::{
     },
     value::Value,
 };
-use lmdb::{
+use aingle_lmdb::{
     Cursor,
     Database,
     Iter as LmdbIter,
@@ -112,10 +112,10 @@ impl MultiStore {
 }
 
 /*
-fn read_transform_owned(val: Result<&[u8], lmdb::Error>) -> Result<Option<OwnedValue>, StoreError> {
+fn read_transform_owned(val: Result<&[u8], aingle_lmdb::Error>) -> Result<Option<OwnedValue>, StoreError> {
     match val {
         Ok(bytes) => Value::from_tagged_slice(bytes).map(|v| Some(OwnedValue::from(&v))).map_err(StoreError::DataError),
-        Err(lmdb::Error::NotFound) => Ok(None),
+        Err(aingle_lmdb::Error::NotFound) => Ok(None),
         Err(e) => Err(StoreError::LmdbError(e)),
     }
 }

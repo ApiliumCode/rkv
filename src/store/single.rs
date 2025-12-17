@@ -17,7 +17,7 @@ use crate::{
     },
     value::Value,
 };
-use lmdb::{
+use aingle_lmdb::{
     Cursor,
     Database,
     Iter as LmdbIter,
