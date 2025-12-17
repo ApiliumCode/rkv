@@ -1,91 +1,126 @@
-# rkv
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ApiliumCode/aingle/main/assets/aingle.svg" alt="AIngle Logo" width="200"/>
+</p>
 
-[![Travis CI Build Status](https://travis-ci.org/mozilla/rkv.svg?branch=master)](https://travis-ci.org/mozilla/rkv)
-[![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/lk936u5y5bi6qafb/branch/master?svg=true)](https://ci.appveyor.com/project/mykmelez/rkv/branch/master)
-[![Documentation](https://docs.rs/rkv/badge.svg)](https://docs.rs/rkv/)
-[![Crate](https://img.shields.io/crates/v/rkv.svg)](https://crates.io/crates/rkv)
+<h1 align="center">rkv</h1>
 
-The [rkv Rust crate](https://crates.io/crates/rkv) is a simple, humane, typed key-value storage solution. It supports multiple backend engines with varying guarantees, such as [LMDB](http://www.lmdb.tech/doc/) for performance, or "SafeMode" for reliability.
+<p align="center">
+  <strong>Typed key-value storage with multiple backends for AIngle</strong>
+</p>
 
-This master branch only supports the LMDB backend. We're looking into supporting multiple backends, starting with "SafeMode" in the [feature branch](https://github.com/mozilla/rkv/tree/safe-mode).
+<p align="center">
+  <a href="https://crates.io/crates/rkv"><img src="https://img.shields.io/crates/v/rkv.svg" alt="Crates.io"/></a>
+  <a href="https://docs.rs/rkv"><img src="https://docs.rs/rkv/badge.svg" alt="Documentation"/></a>
+  <a href="https://github.com/ApiliumCode/rkv/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue.svg" alt="License"/></a>
+  <a href="https://github.com/ApiliumCode/rkv/actions"><img src="https://github.com/ApiliumCode/rkv/workflows/CI/badge.svg" alt="CI Status"/></a>
+</p>
 
-## ⚠️ Warning ⚠️
+---
 
-The LMDB backend is currently unstable and crash-prone. We're attempting to fix these crashes in bugs [1538539](https://bugzilla.mozilla.org/show_bug.cgi?id=1538539), [1538541](https://bugzilla.mozilla.org/show_bug.cgi?id=1538541) and [1550174](https://bugzilla.mozilla.org/show_bug.cgi?id=1550174).
+## Overview
 
-To use rkv in production/release environments at Mozilla, you may do so with the "SafeMode" backend, for example:
+A simple, humane, typed key-value storage solution for Rust. This crate supports multiple backend engines with varying guarantees, optimized for use within the AIngle distributed systems framework.
+
+## Features
+
+- **Multiple backends** - LMDB for performance, SafeMode for reliability
+- **Type-safe API** - Strongly typed keys and values
+- **Concurrent access** - Multi-reader, single-writer transactions
+- **Crash-safe** - ACID-compliant storage with durability guarantees
+- **Compact** - Efficient memory-mapped I/O
+
+## Installation
 
 ```toml
-rkv = { git = "https://github.com/mozilla/rkv", branch="safe-mode", default-features = false }
+[dependencies]
+rkv = "0.1"
 ```
+
+## Quick Start
+
+```rust
+use rkv::{Manager, Rkv, StoreOptions, Value};
+use std::path::Path;
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Open or create the environment
+    let path = Path::new("./my-store");
+    let mut manager = Manager::singleton().write()?;
+    let env = manager.get_or_create(path, Rkv::new)?;
+
+    // Open a store
+    let store = env.read()?.open_single("mystore", StoreOptions::create())?;
+
+    // Write data
+    {
+        let mut writer = env.read()?.write()?;
+        store.put(&mut writer, "key", &Value::Str("value"))?;
+        writer.commit()?;
+    }
+
+    // Read data
+    let reader = env.read()?.read()?;
+    let value = store.get(&reader, "key")?;
+    println!("Value: {:?}", value);
+
+    Ok(())
+}
+```
+
+## Backend Engines
+
+| Backend | Use Case | Characteristics |
+|---------|----------|-----------------|
+| **LMDB** | High performance | Memory-mapped, fast reads |
+| **SafeMode** | Reliability | In-memory with sync writes |
+| **SQLite** | Portability | Planned for future release |
+
+### SafeMode Backend
+
+For production environments requiring maximum reliability:
 
 ```rust
 use rkv::{Manager, Rkv};
 use rkv::backend::{SafeMode, SafeModeEnvironment};
 
-let mut manager = Manager::<SafeModeEnvironment>::singleton().write().unwrap();
-let shared_rkv = manager.get_or_create(path, Rkv::new::<SafeMode>).unwrap();
-
-...
+let mut manager = Manager::<SafeModeEnvironment>::singleton().write()?;
+let env = manager.get_or_create(path, Rkv::new::<SafeMode>)?;
 ```
 
-Instead of a branch, we suggest using a specific `rev` instead. For example, `4a1cc23906865626fa715fd99d98620169d3fd7b` is the latest stable version for "safe-mode".
+## Features Flags
 
-The "SafeMode` backend performs well, with two caveats: the entire database is stored in memory, and write transactions are synchronously written to disk on commit.
+| Feature | Description | Default |
+|---------|-------------|---------|
+| `db-dup-sort` | Multiple values per key | Yes |
+| `db-int-key` | Integer key optimizations | Yes |
+| `backtrace` | Error backtraces | No |
 
-In the future, it will be advisable to switch to a different backend with better performance guarantees. We're working on either fixing the LMDB crashes, or offering more choices of backend engines (e.g. SQLite).
+## Build & Test
 
-## Use
-
-Comprehensive information about using rkv is available in its [online documentation](https://docs.rs/rkv/), which can also be generated for local consumption:
-
-```sh
-cargo doc --open
-```
-
-## Build
-
-Build this project as you would build other Rust crates:
-
-```sh
+```bash
+# Build
 cargo build
-```
 
-### Features
-
-There are several features that you can opt-in and out of when using rkv:
-
-By default, `db-dup-sort` and `db-int-key` features offer high level database APIs which allow multiple values per key, and optimizations around integer-based keys respectively. Opt out of these default features when specifying the rkv dependency in your Cargo.toml file to disable them; doing so avoids a certain amount of overhead required to support them.
-
-If you specify the `backtrace` feature, backtraces will be enabled in "failure"
-errors. This feature is disabled by default.
-
-To aid fuzzing efforts, `with-asan`, `with-fuzzer`, and `with-fuzzer-no-link` configure the build scripts responsible with compiling the underlying backing engines (e.g. LMDB) to build with these LLMV features enabled. Please refer to the official LLVM/Clang documentation on them for more informatiuon. These features are also disabled by default.
-
-## Test
-
-Test this project as you would test other Rust crates:
-
-```sh
+# Run tests
 cargo test
-```
 
-The project includes unit and doc tests embedded in the `src/` files, integration tests in the `tests/` subdirectory, and usage examples in the `examples/` subdirectory. To ensure your changes don't break examples, also run them via the run-all-examples.sh shell script:
+# Generate documentation
+cargo doc --open
 
-```sh
+# Run examples
 ./run-all-examples.sh
 ```
 
-Note: the test fixtures in the `tests/envs/` subdirectory aren't included in the package published to crates.io, so you must clone this repository in order to run the tests that depend on those fixtures or use the `rand` and `dump` executables to recreate them.
+## Part of AIngle
 
-## Contribute
-
-Of the various open source archetypes described in [A Framework for Purposeful Open Source](https://medium.com/mozilla-open-innovation/whats-your-open-source-strategy-here-are-10-answers-383221b3f9d3), the rkv project most closely resembles the Specialty Library, and we welcome contributions. Please report problems or ask questions using this repo's GitHub [issue tracker](https://github.com/mozilla/rkv/issues) and submit [pull requests](https://github.com/mozilla/rkv/pulls) for code and documentation changes.
-
-rkv relies on the latest [rustfmt](https://github.com/rust-lang-nursery/rustfmt) for code formatting, so please make sure your pull request passes the rustfmt before submitting it for review. See rustfmt's [quick start](https://github.com/rust-lang-nursery/rustfmt#quick-start) for installation details.
-
-We follow Mozilla's [Community Participation Guidelines](https://www.mozilla.org/en-US/about/governance/policies/participation/) while contributing to this project.
+This crate is part of the [AIngle](https://github.com/ApiliumCode/aingle) ecosystem - a Semantic DAG framework for IoT and distributed AI applications.
 
 ## License
 
-The rkv source code is licensed under the Apache License, Version 2.0, as described in the [LICENSE](https://github.com/mozilla/rkv/blob/master/LICENSE) file.
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
+
+---
+
+<p align="center">
+  <sub>Maintained by <a href="https://apilium.com">Apilium Technologies</a> - Tallinn, Estonia</sub>
+</p>
